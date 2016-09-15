@@ -199,7 +199,7 @@ public int MenuHandler_Checkpoints(Menu menu, MenuAction action, int param1, int
 						
 						any cpinfo[CP_ArrayLength];
 						
-						cpinfo[0] = Player_GetZoneEditCreationType(client);
+						cpinfo[CP_ZoneType] = Player_GetZoneEditCreationType(client);
 						
 						CopyVector3ToArray(min, cpinfo, CP_MinX);
 						CopyVector3ToArray(max, cpinfo, CP_MaxX);
@@ -373,7 +373,7 @@ public Action RenewZoneBoxes(Handle timer, any client)
 		any cpinfo[CP_ArrayLength];
 		GetArrayArray(STA_Checkpoints, i, cpinfo);
 		
-		zonetype = cpinfo[0];
+		zonetype = cpinfo[CP_ZoneType];
 
 		GetArrayVector3(cpinfo, CP_MinX, min);
 		GetArrayVector3(cpinfo, CP_MaxX, max);
