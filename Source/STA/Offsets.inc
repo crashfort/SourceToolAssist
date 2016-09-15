@@ -25,28 +25,28 @@ void Offsets_ThrowIfNotFound(int offset, char[] name)
 
 public void Offsets_Init()
 {
-	Offset_CollisionGroup = FindSendPropOffs("CBaseEntity", "m_CollisionGroup");
+	Offset_CollisionGroup = FindSendPropInfo("CBaseEntity", "m_CollisionGroup");
 	Offsets_ThrowIfNotFound(Offset_CollisionGroup, "m_CollisionGroup");
 	
-	Offset_VecMin = FindSendPropOffs("CBaseEntity", "m_vecMins");
+	Offset_VecMin = FindSendPropInfo("CBaseEntity", "m_vecMins");
 	Offsets_ThrowIfNotFound(Offset_VecMin, "m_vecMins");
 	
-	Offset_VecMax = FindSendPropOffs("CBaseEntity", "m_vecMaxs");
+	Offset_VecMax = FindSendPropInfo("CBaseEntity", "m_vecMaxs");
 	Offsets_ThrowIfNotFound(Offset_VecMax, "m_vecMaxs");
 	
-	Offset_ObserverTarget = FindSendPropOffs("CBasePlayer", "m_hObserverTarget");
+	Offset_ObserverTarget = FindSendPropInfo("CBasePlayer", "m_hObserverTarget");
 	Offsets_ThrowIfNotFound(Offset_ObserverTarget, "m_hObserverTarget");
 	
-	Offset_ObserverMode = FindSendPropOffs("CBasePlayer", "m_iObserverMode");
+	Offset_ObserverMode = FindSendPropInfo("CBasePlayer", "m_iObserverMode");
 	Offsets_ThrowIfNotFound(Offset_ObserverMode, "m_iObserverMode");
 	
-	Offset_SolidType = FindSendPropOffs("CBaseEntity", "m_nSolidType");
+	Offset_SolidType = FindSendPropInfo("CBaseEntity", "m_nSolidType");
 	Offsets_ThrowIfNotFound(Offset_SolidType, "m_nSolidType");
 	
-	Offsets_Effects = FindSendPropOffs("CBaseEntity", "m_fEffects");
+	Offsets_Effects = FindSendPropInfo("CBaseEntity", "m_fEffects");
 	Offsets_ThrowIfNotFound(Offsets_Effects, "m_fEffects");
 	
-	Offsets_RenderColor = FindSendPropOffs("CBaseEntity", "m_clrRender");
+	Offsets_RenderColor = FindSendPropInfo("CBaseEntity", "m_clrRender");
 	Offsets_ThrowIfNotFound(Offsets_RenderColor, "m_clrRender");
 }
 
