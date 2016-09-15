@@ -520,13 +520,15 @@ public int Player_GetSpectateList(int client, int[] outlist)
 public void STA_PrintMessageToAllClients(const char[] format, any ...)
 {
 	char message[255];
+	message[0] = 0;
 	
-	FormatEx(message, sizeof(message), "%s", STA_MessagePrefix);	
-	StrCat(message, sizeof(message), format);
+	char outmessage[255];
 	
-	VFormat(message, sizeof(message), message, 2);
+	StrCat(message, sizeof(message), STA_MessagePrefix);
+	StrCat(message, sizeof(message), format);	
+	VFormat(outmessage, sizeof(outmessage), message, 2);
 	
-	CPrintToChatAll(message);
+	CPrintToChatAll(outmessage);
 }
 
 /*
@@ -535,13 +537,15 @@ public void STA_PrintMessageToAllClients(const char[] format, any ...)
 public void STA_PrintMessageToClient(int client, const char[] format, any ...)
 {
 	char message[255];
+	message[0] = 0;
 	
-	FormatEx(message, sizeof(message), "%s", STA_MessagePrefix);	
-	StrCat(message, sizeof(message), format);
+	char outmessage[255];
 	
-	VFormat(message, sizeof(message), message, 3);
+	StrCat(message, sizeof(message), STA_MessagePrefix);
+	StrCat(message, sizeof(message), format);	
+	VFormat(outmessage, sizeof(outmessage), message, 3);
 	
-	CPrintToChat(client, message);
+	CPrintToChat(client, outmessage);
 }
 
 /*
@@ -550,14 +554,19 @@ public void STA_PrintMessageToClient(int client, const char[] format, any ...)
 public void STA_PrintMessageToClientSpectators(int client, const char[] format, any ...)
 {
 	char message[255];
+	message[0] = 0;
+	
+	char outmessage[255];
 	
 	char clientname[MAX_NAME_LENGTH];
 	GetClientName(client, clientname, sizeof(clientname));
 	
-	FormatEx(message, sizeof(message), "%s {lightblue}* %s * {ghostwhite}- ", STA_MessagePrefix, clientname);	
+	StrCat(message, sizeof(message), STA_MessagePrefix);
+	StrCat(message, sizeof(message), " {lightblue}* ");
+	StrCat(message, sizeof(message), clientname);
+	StrCat(message, sizeof(message), " * {ghostwhite}- ");
 	StrCat(message, sizeof(message), format);
-	
-	VFormat(message, sizeof(message), message, 3);
+	VFormat(outmessage, sizeof(outmessage), message, 3);
 	
 	int specs[MAXPLAYERS + 1];
 	int count = Player_GetSpectateList(client, specs);
