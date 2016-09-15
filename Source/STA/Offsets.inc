@@ -32,7 +32,7 @@ public void Offsets_Init()
 	Offsets_ThrowIfNotFound(Offset_VecMin, "m_vecMins");
 	
 	Offset_VecMax = FindSendPropOffs("CBaseEntity", "m_vecMaxs");
-	Offsets_ThrowIfNotFound(Offset_VecMax, "m_vecMaxs");	
+	Offsets_ThrowIfNotFound(Offset_VecMax, "m_vecMaxs");
 	
 	Offset_ObserverTarget = FindSendPropOffs("CBasePlayer", "m_hObserverTarget");
 	Offsets_ThrowIfNotFound(Offset_ObserverTarget, "m_hObserverTarget");
