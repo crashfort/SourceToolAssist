@@ -632,23 +632,8 @@ public bool CP_CanPassHookTest(int client)
 	
 	if (!IsFakeClient(client))
 	{
-		if (Player_GetIsCreatingCheckpoint(client))
-		{
-			//PrintToServer("creating checkpoint");
-			return false;
-		}
-		
-		if (Player_GetIsRewinding(client))
-		{
-			//PrintToServer("is rewinding");
-			return false;
-		}
-		
-		if (!Player_GetIsSegmenting(client))
-		{
-			//PrintToServer("is not segmenting");
-			return false;
-		}
+		//PrintToServer("not a bot");
+		return false;
 	}
 	
 	//PrintToServer("ok");
