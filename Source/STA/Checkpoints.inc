@@ -30,17 +30,22 @@ enum
 
 enum
 {
-	CP_ZoneType,
+	/*
+		This index is only used by us to later remove this trigger entity
+	*/
+	CPZone_EntID,
 	
-	CP_MinX,
-	CP_MinY,
-	CP_MinZ,
+	CPZone_ZoneType,
 	
-	CP_MaxX,
-	CP_MaxY,
-	CP_MaxZ,
+	CPZone_MinX,
+	CPZone_MinY,
+	CPZone_MinZ,
 	
-	CP_ArrayLength,
+	CPZone_MaxX,
+	CPZone_MaxY,
+	CPZone_MaxZ,
+	
+	CPZone_ArrayLength,
 };
 
 enum
@@ -80,7 +85,7 @@ public void CP_GetZoneColor(int zonetype, int outcolor[4])
 	}
 }
 
-ArrayList STA_Checkpoints;
+ArrayList STA_Checkpoints = null;
 int STA_LaserSprite;
 
 public bool CP_ZoneEditTraceFilter(int entity, int contentsmask, any data)
@@ -197,12 +202,12 @@ public int MenuHandler_Checkpoints(Menu menu, MenuAction action, int param1, int
 						
 						Player_GetZoneEditBoxMinMax(client, min, max);
 						
-						any cpinfo[CP_ArrayLength];
+						any cpinfo[CPZone_ArrayLength];
 						
-						cpinfo[CP_ZoneType] = Player_GetZoneEditCreationType(client);
+						cpinfo[CPZone_ZoneType] = Player_GetZoneEditCreationType(client);
 						
-						CopyVector3ToArray(min, cpinfo, CP_MinX);
-						CopyVector3ToArray(max, cpinfo, CP_MaxX);
+						CopyVector3ToArray(min, cpinfo, CPZone_MinX);
+						CopyVector3ToArray(max, cpinfo, CPZone_MaxX);
 						
 						int zoneid = GetArraySize(STA_Checkpoints);
 						
@@ -308,6 +313,30 @@ public Action STA_ZoneGridSize(int client, int args)
 	return Plugin_Handled;
 }
 
+public void CP_RemoveAllCheckpoints()
+{
+	if (STA_Checkpoints == null)
+	{
+		return;
+	}
+	
+	int arraysize = GetArraySize(STA_Checkpoints);
+	
+	for (int i = 0; i < arraysize; ++i)
+	{
+		int entid = GetArrayCell(STA_Checkpoints, i, CPZone_EntID);
+		
+		if (entid == -1)
+		{
+			continue;
+		}
+		
+		RemoveEdict(entid);
+	}
+	
+	ClearArray(STA_Checkpoints);
+}
+
 /*
 	Triggers are required to have a model
 */
@@ -322,18 +351,15 @@ public void CP_MapStartInit()
 	
 	CreateTimer(1.0, RenewZoneBoxes, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 	
-	if (STA_Checkpoints != null)
-	{
-		ClearArray(STA_Checkpoints);
-		delete STA_Checkpoints;
-	}
+	CP_RemoveAllCheckpoints();
 	
-	STA_Checkpoints = CreateArray(CP_ArrayLength);
+	STA_Checkpoints = CreateArray(CPZone_ArrayLength);
 }
 
 public void CP_OnMapEnd()
 {
-	
+	CP_RemoveAllCheckpoints();
+	delete STA_Checkpoints;
 }
 
 public void CP_Init()
@@ -370,13 +396,13 @@ public Action RenewZoneBoxes(Handle timer, any client)
 		
 		float points[8][3];
 		
-		any cpinfo[CP_ArrayLength];
+		any cpinfo[CPZone_ArrayLength];
 		GetArrayArray(STA_Checkpoints, i, cpinfo);
 		
-		zonetype = cpinfo[CP_ZoneType];
+		zonetype = cpinfo[CPZone_ZoneType];
 
-		GetArrayVector3(cpinfo, CP_MinX, min);
-		GetArrayVector3(cpinfo, CP_MaxX, max);
+		GetArrayVector3(cpinfo, CPZone_MinX, min);
+		GetArrayVector3(cpinfo, CPZone_MaxX, max);
 		
 		STA_PointsFromBox(min, max, points);
 		
@@ -462,16 +488,17 @@ public int MenuHandler_ZoneSelect(Menu menu, MenuAction action, int param1, int 
 		
 		CP_ResetPlayer(client);
 		
+		CP_RemoveAllCheckpoints();
+		
 		int arraysize;
 		ReadFileCell(file, arraysize, 4);
 		
-		ClearArray(STA_Checkpoints);
-		
-		any cpinfo[CP_ArrayLength];
+		any cpinfo[CPZone_ArrayLength];
+		cpinfo[CPZone_EntID] = -1;
 			
 		for (int i = 0; i < arraysize; ++i)
 		{			
-			for (int j = 0; j < CP_ArrayLength; ++j)
+			for (int j = CPZone_ZoneType; j < CPZone_ArrayLength; ++j)
 			{
 				ReadFileCell(file, cpinfo[j], 4);
 			}
@@ -503,9 +530,7 @@ public int MenuHandler_ZoneSelect(Menu menu, MenuAction action, int param1, int 
 }
 
 public void CP_LoadZonesFromFile(int client)
-{
-	ClearArray(STA_Checkpoints);
-	
+{	
 	char mapbuf[MAX_NAME_LENGTH];
 	GetCurrentMap(mapbuf, sizeof(mapbuf));
 	
@@ -605,13 +630,13 @@ public void CP_SaveZonesToFile(int client)
 	int arraysize = GetArraySize(STA_Checkpoints);
 	WriteFileCell(file, arraysize, 4);
 	
-	any cpinfo[CP_ArrayLength];
+	any cpinfo[CPZone_ArrayLength];
 	
 	for (int i = 0; i < arraysize; ++i)
 	{
 		GetArrayArray(STA_Checkpoints, i, cpinfo);
 		
-		for (int j = 0; j < CP_ArrayLength; ++j)
+		for (int j = CPZone_ZoneType; j < CPZone_ArrayLength; ++j)
 		{
 			WriteFileCell(file, cpinfo[j], 4);
 		}
@@ -829,14 +854,16 @@ public void CP_CreateTriggerForCheckpoint(int checkpoint)
 		return;
 	}
 	
-	any cpinfo[CP_ArrayLength];
+	any cpinfo[CPZone_ArrayLength];
 	GetArrayArray(STA_Checkpoints, checkpoint, cpinfo);
+	
+	SetArrayCell(STA_Checkpoints, checkpoint, newent, CPZone_EntID);
 	
 	float min[3];
 	float max[3];	
 	//Player_GetZoneEditBoxMinMax(client, min, max);
-	GetArrayVector3(cpinfo, CP_MinX, min);
-	GetArrayVector3(cpinfo, CP_MaxX, max);
+	GetArrayVector3(cpinfo, CPZone_MinX, min);
+	GetArrayVector3(cpinfo, CPZone_MaxX, max);
 	
 	float origin[3];
 	STA_GetBoxOrigin(min, max, origin);
@@ -858,7 +885,7 @@ public void CP_CreateTriggerForCheckpoint(int checkpoint)
 	
 	SetEntityModel(newent, CP_Model);
 	
-	int zonetype = cpinfo[0];
+	int zonetype = cpinfo[CPZone_ZoneType];
 	
 	/*
 		We store our trigger data in render color to easily get its userdata in touch/leave hooks 
@@ -891,13 +918,13 @@ public void CP_CreateTriggerForCheckpoint(int checkpoint)
 
 public void STA_GetCheckpointBoundingBox(int checkpoint, float[3] min, float[3] max)
 {
-	min[0] = GetArrayCell(STA_Checkpoints, checkpoint, 0);
-	min[1] = GetArrayCell(STA_Checkpoints, checkpoint, 1);
-	min[2] = GetArrayCell(STA_Checkpoints, checkpoint, 2);
+	min[0] = GetArrayCell(STA_Checkpoints, checkpoint, CPZone_MinX);
+	min[1] = GetArrayCell(STA_Checkpoints, checkpoint, CPZone_MinY);
+	min[2] = GetArrayCell(STA_Checkpoints, checkpoint, CPZone_MinZ);
 	
-	max[0] = GetArrayCell(STA_Checkpoints, checkpoint, 3);
-	max[1] = GetArrayCell(STA_Checkpoints, checkpoint, 4);
-	max[2] = GetArrayCell(STA_Checkpoints, checkpoint, 5);
+	max[0] = GetArrayCell(STA_Checkpoints, checkpoint, CPZone_MaxX);
+	max[1] = GetArrayCell(STA_Checkpoints, checkpoint, CPZone_MaxY);
+	max[2] = GetArrayCell(STA_Checkpoints, checkpoint, CPZone_MaxZ);
 }
 
 public void STA_DrawCheckpoint(int checkpoint)
