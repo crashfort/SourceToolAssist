@@ -238,7 +238,7 @@ public void STA_OpenZoneMenu(int client)
 	
 	if (!onteam)
 	{
-		STA_PrintMessageToClient(client, "You msut be in a team to manage checkpoints");
+		STA_PrintMessageToClient(client, "You must be in a team to manage checkpoints");
 		return;
 	}
 	
