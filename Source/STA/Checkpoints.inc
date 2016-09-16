@@ -58,6 +58,7 @@ enum
 	
 	CPMenu_LoadFromFile,
 	CPMenu_SaveToFile,
+	CPMenu_RemoveZones,
 };
 
 #define CP_ZoneTypeStartColor {255, 0, 255, 255}
@@ -143,6 +144,12 @@ public int MenuHandler_Checkpoints(Menu menu, MenuAction action, int param1, int
 			case CPMenu_SaveToFile:
 			{
 				CP_SaveZonesToFile(client);
+			}
+			
+			case CPMenu_RemoveZones:
+			{
+				CP_RemoveAllCheckpoints();
+				STA_OpenZoneMenu(client);
 			}
 			
 			/*
@@ -261,6 +268,7 @@ public void STA_OpenZoneMenu(int client)
 		if (GetArraySize(STA_Checkpoints) > 0)
 		{
 			Menu_AddEnumEntry(menu, CPMenu_SaveToFile, "Save checkpoints");
+			Menu_AddEnumEntry(menu, CPMenu_RemoveZones, "Remove checkpoints");
 		}
 	}
 	
