@@ -160,8 +160,9 @@ public void Player_ResizeRecordFrameList(int client, int newsize)
 
 public void Player_DeleteRecordFrames(int client)
 {	
-	if (RecordFramesList[client]!= null)
+	if (RecordFramesList[client] != null)
 	{
+		ClearArray(RecordFramesList[client]);
 		delete RecordFramesList[client];
 	}
 }

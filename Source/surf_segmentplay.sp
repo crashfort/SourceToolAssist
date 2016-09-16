@@ -881,6 +881,14 @@ public Action OnPlayerSpawn(Event event, const char[] name, bool dontbroadcast)
 	}
 }
 
+public Action OnPlayerDisconnect(Event event, const char[] name, bool dontbroadcast)
+{
+	int userid = GetEventInt(event, "userid");
+	int client = GetClientOfUserId(userid);
+	
+	ResetPlayerReplaySegment(client);
+}
+
 public void OnPluginStart()
 {
 	RegConsoleCmd("sm_segmentreplay", STA_ManageReplays);
@@ -894,7 +902,8 @@ public void OnPluginStart()
 	RegConsoleCmd("+sm_fastforward", STA_FastForwardDown);
 	RegConsoleCmd("-sm_fastforward", STA_FastForwardUp);
 	
-	HookEvent("player_spawn", OnPlayerSpawn, EventHookMode_Post);
+	HookEvent("player_spawn", OnPlayerSpawn);
+	HookEvent("player_disconnect", OnPlayerDisconnect, EventHookMode_Pre);
 	
 	Offsets_Init();
 	CP_Init();
