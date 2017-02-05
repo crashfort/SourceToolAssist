@@ -894,7 +894,7 @@ public void OnEntityCreated(int entity, const char[] classname)
 	}
 	else
 	{
-		if (StrContains(classname, "trigger_", true) != -1 || StrEqual(classname, "func_door", true) != -1)
+		if (StrContains(classname, "trigger_", true) != -1 || StrContains(classname, "_door") != -1)
 		{
 			SDKHook(entity, SDKHook_StartTouch, OnTrigger);
 			SDKHook(entity, SDKHook_Touch, OnTrigger);
