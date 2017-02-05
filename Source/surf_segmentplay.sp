@@ -166,10 +166,7 @@ public int MenuHandler_ReplaySelect(Menu menu, MenuAction action, int param1, in
 			
 		for (int i = 0; i < framecount; ++i)
 		{			
-			for (int j = 0; j < FRAME_Length; ++j)
-			{
-				ReadFileCell(file, frameinfo[j], 4);
-			}
+			ReadFile(file, frameinfo, sizeof(frameinfo), 4);
 			
 			Player_PushFrame(client, frameinfo);
 		}
