@@ -886,6 +886,33 @@ public Action OnPlayerDisconnect(Event event, const char[] name, bool dontbroadc
 	ResetPlayerReplaySegment(client);
 }
 
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	if (StrEqual(classname, "func_button", true))
+	{
+		SDKHook(entity, SDKHook_Use, OnTrigger);
+	}
+	else
+	{
+		if (StrContains(classname, "trigger_", true) != -1 || StrEqual(classname, "func_door", true) != -1)
+		{
+			SDKHook(entity, SDKHook_StartTouch, OnTrigger);
+			SDKHook(entity, SDKHook_Touch, OnTrigger);
+			SDKHook(entity, SDKHook_EndTouch, OnTrigger);
+		}
+	}
+}
+
+public Action OnTrigger(int entity, int other)
+{
+	if(other >= 1 && other <= MaxClients && IsFakeClient(other))
+	{
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
+}
+
 public void OnPluginStart()
 {
 	RegConsoleCmd("sm_segmentreplay", STA_ManageReplays);
