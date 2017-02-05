@@ -166,10 +166,7 @@ public int MenuHandler_ReplaySelect(Menu menu, MenuAction action, int param1, in
 			
 		for (int i = 0; i < framecount; ++i)
 		{			
-			for (int j = 0; j < FRAME_Length; ++j)
-			{
-				ReadFileCell(file, frameinfo[j], 4);
-			}
+			ReadFile(file, frameinfo, sizeof(frameinfo), 4);
 			
 			Player_PushFrame(client, frameinfo);
 		}
@@ -887,6 +884,33 @@ public Action OnPlayerDisconnect(Event event, const char[] name, bool dontbroadc
 	int client = GetClientOfUserId(userid);
 	
 	ResetPlayerReplaySegment(client);
+}
+
+public void OnEntityCreated(int entity, const char[] classname)
+{
+	if (StrEqual(classname, "func_button", true))
+	{
+		SDKHook(entity, SDKHook_Use, OnTrigger);
+	}
+	else
+	{
+		if (StrContains(classname, "trigger_", true) != -1 || StrContains(classname, "_door") != -1)
+		{
+			SDKHook(entity, SDKHook_StartTouch, OnTrigger);
+			SDKHook(entity, SDKHook_Touch, OnTrigger);
+			SDKHook(entity, SDKHook_EndTouch, OnTrigger);
+		}
+	}
+}
+
+public Action OnTrigger(int entity, int other)
+{
+	if(other >= 1 && other <= MaxClients && IsFakeClient(other))
+	{
+		return Plugin_Handled;
+	}
+
+	return Plugin_Continue;
 }
 
 public void OnPluginStart()
