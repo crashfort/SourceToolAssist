@@ -348,14 +348,27 @@ public void CP_RemoveAllCheckpoints()
 /*
 	Triggers are required to have a model
 */
-#define CP_Model "models\\props\\cs_italy\\bananna.mdl"
-
-#define CP_LaserSprite "materials\\sprites\\spotlight.vmt"
+#define CP_Model "models/error.mdl"
 
 public void CP_MapStartInit()
 {
-	STA_LaserSprite = PrecacheModel(CP_LaserSprite);
 	PrecacheModel(CP_Model);
+
+	Handle gameconfig = LoadGameConfigFile("funcommands.games");
+	if (!gameconfig)
+	{
+		SetFailState("funcommands.games.txt not found.");
+		return;
+	}
+
+	char spritebeam[PLATFORM_MAX_PATH];
+	if (!GameConfGetKeyValue(gameconfig, "SpriteBeam", spritebeam, sizeof(spritebeam)) || !spritebeam[0])
+	{
+		SetFailState("SpriteBeam key value not found.");
+		return;
+	}
+
+	STA_LaserSprite = PrecacheModel(spritebeam, true);
 	
 	CreateTimer(1.0, RenewZoneBoxes, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 	
@@ -891,8 +904,7 @@ public void CP_CreateTriggerForCheckpoint(int checkpoint)
 	DispatchKeyValue(newent, "StartDisabled", "0");
 	DispatchKeyValue(newent, "targetname", zonename);
 	DispatchKeyValue(newent, "wait", "0");
-	
-	SetEntityModel(newent, CP_Model);
+	DispatchKeyValue(newent, "model", CP_Model);
 	
 	int zonetype = cpinfo[CPZone_ZoneType];
 	
