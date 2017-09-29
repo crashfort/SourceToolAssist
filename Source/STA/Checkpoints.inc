@@ -747,7 +747,15 @@ public void CP_StartTouch(int entity, int client)
 			
 			if (zonetype == CP_ZoneTypeNormal)
 			{
-				FormatEx(message, sizeof(message), STA_CheckpointFormat, zoneid, curtimebuf);
+				if (IsSource2009())
+				{
+					FormatEx(message, sizeof(message), STA_CheckpointFormat, zoneid, curtimebuf);
+				}
+
+				else
+				{
+					FormatEx(message, sizeof(message), STA_CSGOCheckpointFormat, zoneid, curtimebuf);
+				}
 				
 				if (isfake)
 				{
@@ -765,7 +773,15 @@ public void CP_StartTouch(int entity, int client)
 				char namebuf[MAX_NAME_LENGTH];				
 				GetClientName(fakeid, namebuf, sizeof(namebuf));
 				
-				FormatEx(message, sizeof(message), STA_EndFinishFormat, namebuf, curtimebuf);
+				if (IsSource2009())
+				{
+					FormatEx(message, sizeof(message), STA_EndFinishFormat, namebuf, curtimebuf);
+				}
+
+				else
+				{
+					FormatEx(message, sizeof(message), STA_CSGOEndFinishFormat, namebuf, curtimebuf);
+				}
 				
 				STA_PrintMessageToAllClients(message);
 				

@@ -1,3 +1,5 @@
 *
-!*.txt
+!*/
 !.gitignore
+!multicolors.inc
+!multicolors/*.inc

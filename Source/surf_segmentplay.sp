@@ -6,12 +6,13 @@
 #include <string>
 #include <keyvalues>
 #include <sdkhooks>
-#include <sdktools_tempents_stocks>
+#include <sdktools>
+#include <multicolors>
 
 /*
-	https://forums.alliedmods.net/showthread.php?t=185016
+	https://forums.alliedmods.net/showthread.php?t=247770
 */
-#include "Include\morecolors.inc"
+#include <multicolors>
 
 #include "STA\Time.inc"
 #include "STA\Boundingbox.inc"
