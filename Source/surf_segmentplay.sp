@@ -142,8 +142,8 @@ public int MenuHandler_ReplaySelect(Menu menu, MenuAction action, int param1, in
 		char mapbuf[MAX_NAME_LENGTH];
 		GetCurrentMap(mapbuf, sizeof(mapbuf));
 		
-		char filepath[512];
-		FormatEx(filepath, sizeof(filepath), "%s%s\\%s", STA_ReplayPath, mapbuf, info);
+		char filepath[PLATFORM_MAX_PATH];
+		BuildPath(Path_SM, filepath, sizeof(filepath), "%s/%s/%s/%s", STA_RootPath, STA_ReplayFolder, mapbuf, info);
 		
 		File file = OpenFile(filepath, "rb", true);
 		
@@ -233,8 +233,8 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				char mapbuf[MAX_NAME_LENGTH];
 				GetCurrentMap(mapbuf, sizeof(mapbuf));
 				
-				char mapreplaybuf[512];
-				FormatEx(mapreplaybuf, sizeof(mapreplaybuf), "%s%s", STA_ReplayPath, mapbuf);
+				char mapreplaybuf[PLATFORM_MAX_PATH];
+				BuildPath(Path_SM, mapreplaybuf, sizeof(mapreplaybuf), "%s/%s/%s", STA_RootPath, STA_ReplayFolder, mapbuf);
 				
 				if (!DirExists(mapreplaybuf))
 				{
@@ -304,10 +304,11 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				char playernamebuf[MAX_NAME_LENGTH];
 				GetClientName(client, playernamebuf, sizeof(playernamebuf));
 				
-				char newdirbuf[512];
-				FormatEx(newdirbuf, sizeof(newdirbuf), "%s%s", STA_ReplayPath, mapbuf);
+				char newdirbuf[PLATFORM_MAX_PATH];
+				BuildPath(Path_SM, newdirbuf, sizeof(newdirbuf), "%s/%s/%s", STA_RootPath, STA_ReplayFolder, mapbuf);
 				
-				CreateDirectory(newdirbuf, 0, true, "GAME");
+				if (!DirExists(newdirbuf))
+					CreateDirectory(newdirbuf, 511);
 				
 				int steamid = GetSteamAccountID(client);
 				
@@ -915,6 +916,22 @@ public Action OnTrigger(int entity, int other)
 
 public void OnPluginStart()
 {
+	char dirbuf[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, dirbuf, sizeof(dirbuf), "%s", STA_RootPath);
+
+	if (!DirExists(dirbuf))
+		CreateDirectory(dirbuf, 511);
+
+	BuildPath(Path_SM, dirbuf, sizeof(dirbuf), "%s/%s", STA_RootPath, STA_ReplayFolder);
+
+	if (!DirExists(dirbuf))
+		CreateDirectory(dirbuf, 511);
+
+	BuildPath(Path_SM, dirbuf, sizeof(dirbuf), "%s/%s", STA_RootPath, STA_ZoneFolder);
+
+	if (!DirExists(dirbuf))
+		CreateDirectory(dirbuf, 511);
+
 	RegConsoleCmd("sm_segmentreplay", STA_ManageReplays);
 	RegConsoleCmd("sm_respawn", STA_RespawnPlayer);
 	

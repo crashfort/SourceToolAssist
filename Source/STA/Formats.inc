@@ -4,10 +4,11 @@
 #define FORMATS_INCLUDED
 
 #include "Include\morecolors.inc"
+#define STA_RootPath "data/Source Tool Assist"
+#define STA_ReplayFolder "Replays"
+#define STA_ZoneFolder "Zones"
 
 #define STA_MessagePrefix "{vintage}[{dodgerblue}STA{vintage}]{ghostwhite} - "
-#define STA_ReplayPath "Source Tool Assist\\Replays\\"
-#define STA_ZonePath "Source Tool Assist\\Zones\\"
 
 #define STA_CheckpointFormat "{ghostwhite}Checkpoint [{unique}%d{ghostwhite}] {lightblue}%s"
 #define STA_EndFinishFormat "{orchid}%s {ghostwhite}finished in {unique}%s"

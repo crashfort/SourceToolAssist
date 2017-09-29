@@ -483,8 +483,8 @@ public int MenuHandler_ZoneSelect(Menu menu, MenuAction action, int param1, int 
 		char mapbuf[MAX_NAME_LENGTH];
 		GetCurrentMap(mapbuf, sizeof(mapbuf));
 		
-		char filepath[512];
-		FormatEx(filepath, sizeof(filepath), "%s%s\\%s", STA_ZonePath, mapbuf, info);
+		char filepath[PLATFORM_MAX_PATH];
+		BuildPath(Path_SM, filepath, sizeof(filepath), "%s/%s/%s/%s", STA_RootPath, STA_ZoneFolder, mapbuf, info);
 		
 		File file = OpenFile(filepath, "rb", true);
 		
@@ -542,8 +542,8 @@ public void CP_LoadZonesFromFile(int client)
 	char mapbuf[MAX_NAME_LENGTH];
 	GetCurrentMap(mapbuf, sizeof(mapbuf));
 	
-	char mapzonebuf[512];
-	FormatEx(mapzonebuf, sizeof(mapzonebuf), "%s%s", STA_ZonePath, mapbuf);
+	char mapzonebuf[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, mapzonebuf, sizeof(mapzonebuf), "%s/%s/%s", STA_RootPath, STA_ZoneFolder, mapbuf);
 	
 	if (!DirExists(mapzonebuf))
 	{
@@ -611,10 +611,11 @@ public void CP_SaveZonesToFile(int client)
 	char playernamebuf[MAX_NAME_LENGTH];
 	GetClientName(client, playernamebuf, sizeof(playernamebuf));
 	
-	char newdirbuf[512];
-	FormatEx(newdirbuf, sizeof(newdirbuf), "%s%s", STA_ZonePath, mapbuf);
-	
-	CreateDirectory(newdirbuf, 0, true, "GAME");
+	char newdirbuf[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, newdirbuf, sizeof(newdirbuf), "%s/%s/%s", STA_RootPath, STA_ZoneFolder, mapbuf);
+				
+	if (!DirExists(newdirbuf))
+		CreateDirectory(newdirbuf, 511);
 	
 	int steamid = GetSteamAccountID(client);
 	
