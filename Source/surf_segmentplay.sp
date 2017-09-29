@@ -146,7 +146,7 @@ public int MenuHandler_ReplaySelect(Menu menu, MenuAction action, int param1, in
 		char filepath[PLATFORM_MAX_PATH];
 		BuildPath(Path_SM, filepath, sizeof(filepath), "%s/%s/%s/%s", STA_RootPath, STA_ReplayFolder, mapbuf, info);
 		
-		File file = OpenFile(filepath, "rb", true);
+		File file = OpenFile(filepath, "rb");
 		
 		if (file == null)
 		{
@@ -243,7 +243,7 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 					return;
 				}
 				
-				DirectoryListing dirlist = OpenDirectory(mapreplaybuf, true);
+				DirectoryListing dirlist = OpenDirectory(mapreplaybuf);
 				
 				if (dirlist == null)
 				{
@@ -302,10 +302,10 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				char namebuf[256];
 				FormatEx(namebuf, sizeof(namebuf), "[%d] %s (%s)", steamid, playernamebuf, timebuf);
 				
-				char filename[512];
-				FormatEx(filename, sizeof(filename), "%s\\%s.STA", newdirbuf, namebuf);
+				char filename[PLATFORM_MAX_PATH];
+				FormatEx(filename, sizeof(filename), "%s/%s.STA", newdirbuf, namebuf);
 				
-				File file = OpenFile(filename, "wb", true);
+				File file = OpenFile(filename, "wb");
 				
 				if (file == null)
 				{

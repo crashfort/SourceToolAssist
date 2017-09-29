@@ -499,7 +499,7 @@ public int MenuHandler_ZoneSelect(Menu menu, MenuAction action, int param1, int 
 		char filepath[PLATFORM_MAX_PATH];
 		BuildPath(Path_SM, filepath, sizeof(filepath), "%s/%s/%s/%s", STA_RootPath, STA_ZoneFolder, mapbuf, info);
 		
-		File file = OpenFile(filepath, "rb", true);
+		File file = OpenFile(filepath, "rb");
 		
 		if (file == null)
 		{
@@ -564,7 +564,7 @@ public void CP_LoadZonesFromFile(int client)
 		return;
 	}
 	
-	DirectoryListing dirlist = OpenDirectory(mapzonebuf, true);
+	DirectoryListing dirlist = OpenDirectory(mapzonebuf);
 	
 	if (dirlist == null)
 	{
@@ -621,10 +621,10 @@ public void CP_SaveZonesToFile(int client)
 	char namebuf[256];
 	FormatEx(namebuf, sizeof(namebuf), "[%d] %s (%s)", steamid, playernamebuf, timebuf);
 	
-	char filename[512];
-	FormatEx(filename, sizeof(filename), "%s\\%s.STA", newdirbuf, namebuf);
+	char filename[PLATFORM_MAX_PATH];
+	FormatEx(filename, sizeof(filename), "%s/%s.STA", newdirbuf, namebuf);
 	
-	File file = OpenFile(filename, "wb", true);
+	File file = OpenFile(filename, "wb");
 	
 	if (file == null)
 	{
