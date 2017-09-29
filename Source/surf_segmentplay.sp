@@ -250,7 +250,6 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 					return;
 				}
 				
-				bool done = false;
 				FileType curtype;
 				char curname[512];
 				int index = 0;
@@ -258,38 +257,22 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				Menu selectmenu = CreateMenu(MenuHandler_ReplaySelect);
 				SetMenuTitle(selectmenu, "Replay File Select");
 				
-				do
+				while (dirlist.GetNext(curname, sizeof(curname), curtype))
 				{
-					done = ReadDirEntry(dirlist, curname, sizeof(curname), curtype);
-					
-					if (!done)
-					{
-						/*
-							Only the "." and ".." in here
-						*/
-						if (index == 2)
-						{
-							STA_PrintMessageToClient(client, "No replays available");
-							return;
-						}
-						
-						break;
-					}
-					
-					++index;
-					
-					/*
-						Skip the "." and ".."
-					*/
-					if (index > 2 && curtype == FileType_File)
-					{
-						//PrintToServer("%s", curname);
-						AddMenuItem(selectmenu, curname, curname);
-					}
+					if (curtype != FileType_File)
+						continue;
+
+					AddMenuItem(selectmenu, curname, curname);
+					index++;
 				}
-				while (done);
-				
+
 				delete dirlist;
+
+				if (index == 0)
+				{
+					STA_PrintMessageToClient(client, "No replays available");
+					return;
+				}
 				
 				DisplayMenu(selectmenu, client, MENU_TIME_FOREVER);
 			}

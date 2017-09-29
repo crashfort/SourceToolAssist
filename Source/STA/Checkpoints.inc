@@ -572,7 +572,6 @@ public void CP_LoadZonesFromFile(int client)
 		return;
 	}
 	
-	bool done = false;
 	FileType curtype;
 	char curname[512];
 	int index = 0;
@@ -580,38 +579,22 @@ public void CP_LoadZonesFromFile(int client)
 	Menu selectmenu = CreateMenu(MenuHandler_ZoneSelect);
 	SetMenuTitle(selectmenu, "Zone File Select");
 	
-	do
+	while (dirlist.GetNext(curname, sizeof(curname), curtype))
 	{
-		done = ReadDirEntry(dirlist, curname, sizeof(curname), curtype);
-		
-		if (!done)
-		{
-			/*
-				Only the "." and ".." in here
-			*/
-			if (index == 2)
-			{
-				STA_PrintMessageToClient(client, "No zones available");
-				return;
-			}
-			
-			break;
-		}
-		
-		++index;
-		
-		/*
-			Skip the "." and ".."
-		*/
-		if (index > 2 && curtype == FileType_File)
-		{
-			//PrintToServer("%s", curname);
-			AddMenuItem(selectmenu, curname, curname);
-		}
+		if (curtype != FileType_File)
+			continue;
+
+		AddMenuItem(selectmenu, curname, curname);
+		index++;
 	}
-	while (done);
-	
+
 	delete dirlist;
+
+	if (index == 0)
+	{
+		STA_PrintMessageToClient(client, "No zones available");
+		return;
+	}
 	
 	DisplayMenu(selectmenu, client, MENU_TIME_FOREVER);
 }
