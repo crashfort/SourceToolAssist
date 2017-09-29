@@ -793,13 +793,13 @@ public void CP_EndTouch(int entity, int client)
 		return;
 	}
 	
-	bool isfake = false;
-	int fakeid = 0;
+	/*bool isfake = false;
+	int fakeid = 0;*/
 	
 	if (IsFakeClient(client))
 	{
-		isfake = true;
-		fakeid = client;
+		/*isfake = true;
+		fakeid = client;*/
 		
 		client = Bot_GetLinkedPlayerIndex(client);
 	}
