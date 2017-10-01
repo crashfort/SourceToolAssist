@@ -7,7 +7,6 @@
 #include <keyvalues>
 #include <sdkhooks>
 #include <sdktools>
-#include <multicolors>
 
 /*
 	https://forums.alliedmods.net/showthread.php?t=247770
@@ -29,10 +28,10 @@
 
 public Plugin myinfo = 
 {
-	name = "Surf Segment Replay",
-	author = "CRASH FORT",
+	name = "Source Tool Assist",
+	author = "crashfort",
 	description = "",
-	version = "1",
+	version = "3",
 	url = "https://google.se"
 };
 
@@ -916,7 +915,7 @@ public void OnPluginStart()
 	if (!DirExists(dirbuf))
 		CreateDirectory(dirbuf, 511);
 
-	RegConsoleCmd("sm_segmentreplay", STA_ManageReplays);
+	RegConsoleCmd("sm_sta", STA_ManageReplays);
 	RegConsoleCmd("sm_respawn", STA_RespawnPlayer);
 	
 	RegConsoleCmd("sm_stepforward", STA_StepForward);
@@ -949,7 +948,7 @@ public Action GetBotIDs(Handle timer)
 			CS_SetClientClanTag(i, "[STA]");
 			
 			char namebuf[MAX_NAME_LENGTH];			
-			FormatEx(namebuf, sizeof(namebuf), "Cutie");
+			FormatEx(namebuf, sizeof(namebuf), "crashfort/SourceToolAssist");
 			
 			SetClientName(i, namebuf);
 			
