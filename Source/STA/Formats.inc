@@ -8,7 +8,7 @@
 #define STA_ZoneFolder "Zones"
 
 #define STA_MessagePrefix "{vintage}[{dodgerblue}STA{vintage}]{ghostwhite} - "
-#define STA_CSGOMessagePrefix "{darkblue}[{lightblue}STA{darkblue}]{default} - "
+#define STA_CSGOMessagePrefix "{lightblue}[{darkblue}STA{lightblue}]{default} - "
 
 #define STA_CheckpointFormat "{ghostwhite}Checkpoint [{unique}%d{ghostwhite}] {lightblue}%s"
 #define STA_CSGOCheckpointFormat "{default}Checkpoint [{orange}%d{default}] {bluegrey}%s"
