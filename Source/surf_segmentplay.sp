@@ -29,10 +29,10 @@
 
 public Plugin myinfo = 
 {
-	name = "Surf Segment Replay",
-	author = "CRASH FORT",
+	name = "Source Tool Assist",
+	author = "crashfort",
 	description = "",
-	version = "1",
+	version = "3",
 	url = "https://google.se"
 };
 
