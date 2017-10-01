@@ -525,7 +525,16 @@ public void STA_PrintMessageToAllClients(const char[] format, any ...)
 	
 	char outmessage[255];
 	
-	StrCat(message, sizeof(message), STA_MessagePrefix);
+	if (IsSource2009())
+	{
+		StrCat(message, sizeof(message), STA_MessagePrefix);
+	}
+	
+	else
+	{
+		StrCat(message, sizeof(message), STA_CSGOMessagePrefix);
+	}
+
 	StrCat(message, sizeof(message), format);	
 	VFormat(outmessage, sizeof(outmessage), message, 2);
 	
@@ -542,7 +551,16 @@ public void STA_PrintMessageToClient(int client, const char[] format, any ...)
 	
 	char outmessage[255];
 	
-	StrCat(message, sizeof(message), STA_MessagePrefix);
+	if (IsSource2009())
+	{
+		StrCat(message, sizeof(message), STA_MessagePrefix);
+	}
+
+	else
+	{
+		StrCat(message, sizeof(message), STA_CSGOMessagePrefix);
+	}
+
 	StrCat(message, sizeof(message), format);	
 	VFormat(outmessage, sizeof(outmessage), message, 3);
 	
@@ -562,10 +580,30 @@ public void STA_PrintMessageToClientSpectators(int client, const char[] format, 
 	char clientname[MAX_NAME_LENGTH];
 	GetClientName(client, clientname, sizeof(clientname));
 	
-	StrCat(message, sizeof(message), STA_MessagePrefix);
-	StrCat(message, sizeof(message), " {lightblue}* ");
+	if (IsSource2009())
+	{
+		StrCat(message, sizeof(message), STA_MessagePrefix);
+		StrCat(message, sizeof(message), " {lightblue}* ");
+	}
+
+	else
+	{
+		StrCat(message, sizeof(message), STA_CSGOMessagePrefix);
+		StrCat(message, sizeof(message), " {bluegrey}* ");
+	}
+	
 	StrCat(message, sizeof(message), clientname);
-	StrCat(message, sizeof(message), " * {ghostwhite}- ");
+
+	if (IsSource2009())
+	{
+		StrCat(message, sizeof(message), " * {ghostwhite}- ");
+	}
+
+	else
+	{
+		StrCat(message, sizeof(message), " * {default}- ");
+	}
+
 	StrCat(message, sizeof(message), format);
 	VFormat(outmessage, sizeof(outmessage), message, 3);
 	

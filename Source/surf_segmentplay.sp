@@ -6,12 +6,13 @@
 #include <string>
 #include <keyvalues>
 #include <sdkhooks>
-#include <sdktools_tempents_stocks>
+#include <sdktools>
+#include <multicolors>
 
 /*
-	https://forums.alliedmods.net/showthread.php?t=185016
+	https://forums.alliedmods.net/showthread.php?t=247770
 */
-#include "Include\morecolors.inc"
+#include <multicolors>
 
 #include "STA\Time.inc"
 #include "STA\Boundingbox.inc"
@@ -142,10 +143,10 @@ public int MenuHandler_ReplaySelect(Menu menu, MenuAction action, int param1, in
 		char mapbuf[MAX_NAME_LENGTH];
 		GetCurrentMap(mapbuf, sizeof(mapbuf));
 		
-		char filepath[512];
-		FormatEx(filepath, sizeof(filepath), "%s%s\\%s", STA_ReplayPath, mapbuf, info);
+		char filepath[PLATFORM_MAX_PATH];
+		BuildPath(Path_SM, filepath, sizeof(filepath), "%s/%s/%s/%s", STA_RootPath, STA_ReplayFolder, mapbuf, info);
 		
-		File file = OpenFile(filepath, "rb", true);
+		File file = OpenFile(filepath, "rb");
 		
 		if (file == null)
 		{
@@ -233,8 +234,8 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				char mapbuf[MAX_NAME_LENGTH];
 				GetCurrentMap(mapbuf, sizeof(mapbuf));
 				
-				char mapreplaybuf[512];
-				FormatEx(mapreplaybuf, sizeof(mapreplaybuf), "%s%s", STA_ReplayPath, mapbuf);
+				char mapreplaybuf[PLATFORM_MAX_PATH];
+				BuildPath(Path_SM, mapreplaybuf, sizeof(mapreplaybuf), "%s/%s/%s", STA_RootPath, STA_ReplayFolder, mapbuf);
 				
 				if (!DirExists(mapreplaybuf))
 				{
@@ -242,7 +243,7 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 					return;
 				}
 				
-				DirectoryListing dirlist = OpenDirectory(mapreplaybuf, true);
+				DirectoryListing dirlist = OpenDirectory(mapreplaybuf);
 				
 				if (dirlist == null)
 				{
@@ -250,7 +251,6 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 					return;
 				}
 				
-				bool done = false;
 				FileType curtype;
 				char curname[512];
 				int index = 0;
@@ -258,38 +258,22 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				Menu selectmenu = CreateMenu(MenuHandler_ReplaySelect);
 				SetMenuTitle(selectmenu, "Replay File Select");
 				
-				do
+				while (dirlist.GetNext(curname, sizeof(curname), curtype))
 				{
-					done = ReadDirEntry(dirlist, curname, sizeof(curname), curtype);
-					
-					if (!done)
-					{
-						/*
-							Only the "." and ".." in here
-						*/
-						if (index == 2)
-						{
-							STA_PrintMessageToClient(client, "No replays available");
-							return;
-						}
-						
-						break;
-					}
-					
-					++index;
-					
-					/*
-						Skip the "." and ".."
-					*/
-					if (index > 2 && curtype == FileType_File)
-					{
-						//PrintToServer("%s", curname);
-						AddMenuItem(selectmenu, curname, curname);
-					}
+					if (curtype != FileType_File)
+						continue;
+
+					AddMenuItem(selectmenu, curname, curname);
+					index++;
 				}
-				while (done);
-				
+
 				delete dirlist;
+
+				if (index == 0)
+				{
+					STA_PrintMessageToClient(client, "No replays available");
+					return;
+				}
 				
 				DisplayMenu(selectmenu, client, MENU_TIME_FOREVER);
 			}
@@ -304,10 +288,11 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				char playernamebuf[MAX_NAME_LENGTH];
 				GetClientName(client, playernamebuf, sizeof(playernamebuf));
 				
-				char newdirbuf[512];
-				FormatEx(newdirbuf, sizeof(newdirbuf), "%s%s", STA_ReplayPath, mapbuf);
+				char newdirbuf[PLATFORM_MAX_PATH];
+				BuildPath(Path_SM, newdirbuf, sizeof(newdirbuf), "%s/%s/%s", STA_RootPath, STA_ReplayFolder, mapbuf);
 				
-				CreateDirectory(newdirbuf, 0, true, "GAME");
+				if (!DirExists(newdirbuf))
+					CreateDirectory(newdirbuf, 511);
 				
 				int steamid = GetSteamAccountID(client);
 				
@@ -317,10 +302,10 @@ public int MenuHandler_SegmentReplay(Menu menu, MenuAction action, int param1, i
 				char namebuf[256];
 				FormatEx(namebuf, sizeof(namebuf), "[%d] %s (%s)", steamid, playernamebuf, timebuf);
 				
-				char filename[512];
-				FormatEx(filename, sizeof(filename), "%s\\%s.STA", newdirbuf, namebuf);
+				char filename[PLATFORM_MAX_PATH];
+				FormatEx(filename, sizeof(filename), "%s/%s.STA", newdirbuf, namebuf);
 				
-				File file = OpenFile(filename, "wb", true);
+				File file = OpenFile(filename, "wb");
 				
 				if (file == null)
 				{
@@ -915,6 +900,22 @@ public Action OnTrigger(int entity, int other)
 
 public void OnPluginStart()
 {
+	char dirbuf[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, dirbuf, sizeof(dirbuf), "%s", STA_RootPath);
+
+	if (!DirExists(dirbuf))
+		CreateDirectory(dirbuf, 511);
+
+	BuildPath(Path_SM, dirbuf, sizeof(dirbuf), "%s/%s", STA_RootPath, STA_ReplayFolder);
+
+	if (!DirExists(dirbuf))
+		CreateDirectory(dirbuf, 511);
+
+	BuildPath(Path_SM, dirbuf, sizeof(dirbuf), "%s/%s", STA_RootPath, STA_ZoneFolder);
+
+	if (!DirExists(dirbuf))
+		CreateDirectory(dirbuf, 511);
+
 	RegConsoleCmd("sm_segmentreplay", STA_ManageReplays);
 	RegConsoleCmd("sm_respawn", STA_RespawnPlayer);
 	

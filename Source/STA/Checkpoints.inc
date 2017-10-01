@@ -348,14 +348,27 @@ public void CP_RemoveAllCheckpoints()
 /*
 	Triggers are required to have a model
 */
-#define CP_Model "models\\props\\cs_italy\\bananna.mdl"
-
-#define CP_LaserSprite "materials\\sprites\\spotlight.vmt"
+#define CP_Model "models/error.mdl"
 
 public void CP_MapStartInit()
 {
-	STA_LaserSprite = PrecacheModel(CP_LaserSprite);
 	PrecacheModel(CP_Model);
+
+	Handle gameconfig = LoadGameConfigFile("funcommands.games");
+	if (!gameconfig)
+	{
+		SetFailState("funcommands.games.txt not found.");
+		return;
+	}
+
+	char spritebeam[PLATFORM_MAX_PATH];
+	if (!GameConfGetKeyValue(gameconfig, "SpriteBeam", spritebeam, sizeof(spritebeam)) || !spritebeam[0])
+	{
+		SetFailState("SpriteBeam key value not found.");
+		return;
+	}
+
+	STA_LaserSprite = PrecacheModel(spritebeam, true);
 	
 	CreateTimer(1.0, RenewZoneBoxes, _, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
 	
@@ -483,10 +496,10 @@ public int MenuHandler_ZoneSelect(Menu menu, MenuAction action, int param1, int 
 		char mapbuf[MAX_NAME_LENGTH];
 		GetCurrentMap(mapbuf, sizeof(mapbuf));
 		
-		char filepath[512];
-		FormatEx(filepath, sizeof(filepath), "%s%s\\%s", STA_ZonePath, mapbuf, info);
+		char filepath[PLATFORM_MAX_PATH];
+		BuildPath(Path_SM, filepath, sizeof(filepath), "%s/%s/%s/%s", STA_RootPath, STA_ZoneFolder, mapbuf, info);
 		
-		File file = OpenFile(filepath, "rb", true);
+		File file = OpenFile(filepath, "rb");
 		
 		if (file == null)
 		{
@@ -542,8 +555,8 @@ public void CP_LoadZonesFromFile(int client)
 	char mapbuf[MAX_NAME_LENGTH];
 	GetCurrentMap(mapbuf, sizeof(mapbuf));
 	
-	char mapzonebuf[512];
-	FormatEx(mapzonebuf, sizeof(mapzonebuf), "%s%s", STA_ZonePath, mapbuf);
+	char mapzonebuf[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, mapzonebuf, sizeof(mapzonebuf), "%s/%s/%s", STA_RootPath, STA_ZoneFolder, mapbuf);
 	
 	if (!DirExists(mapzonebuf))
 	{
@@ -551,7 +564,7 @@ public void CP_LoadZonesFromFile(int client)
 		return;
 	}
 	
-	DirectoryListing dirlist = OpenDirectory(mapzonebuf, true);
+	DirectoryListing dirlist = OpenDirectory(mapzonebuf);
 	
 	if (dirlist == null)
 	{
@@ -559,7 +572,6 @@ public void CP_LoadZonesFromFile(int client)
 		return;
 	}
 	
-	bool done = false;
 	FileType curtype;
 	char curname[512];
 	int index = 0;
@@ -567,38 +579,22 @@ public void CP_LoadZonesFromFile(int client)
 	Menu selectmenu = CreateMenu(MenuHandler_ZoneSelect);
 	SetMenuTitle(selectmenu, "Zone File Select");
 	
-	do
+	while (dirlist.GetNext(curname, sizeof(curname), curtype))
 	{
-		done = ReadDirEntry(dirlist, curname, sizeof(curname), curtype);
-		
-		if (!done)
-		{
-			/*
-				Only the "." and ".." in here
-			*/
-			if (index == 2)
-			{
-				STA_PrintMessageToClient(client, "No zones available");
-				return;
-			}
-			
-			break;
-		}
-		
-		++index;
-		
-		/*
-			Skip the "." and ".."
-		*/
-		if (index > 2 && curtype == FileType_File)
-		{
-			//PrintToServer("%s", curname);
-			AddMenuItem(selectmenu, curname, curname);
-		}
+		if (curtype != FileType_File)
+			continue;
+
+		AddMenuItem(selectmenu, curname, curname);
+		index++;
 	}
-	while (done);
-	
+
 	delete dirlist;
+
+	if (index == 0)
+	{
+		STA_PrintMessageToClient(client, "No zones available");
+		return;
+	}
 	
 	DisplayMenu(selectmenu, client, MENU_TIME_FOREVER);
 }
@@ -611,10 +607,11 @@ public void CP_SaveZonesToFile(int client)
 	char playernamebuf[MAX_NAME_LENGTH];
 	GetClientName(client, playernamebuf, sizeof(playernamebuf));
 	
-	char newdirbuf[512];
-	FormatEx(newdirbuf, sizeof(newdirbuf), "%s%s", STA_ZonePath, mapbuf);
-	
-	CreateDirectory(newdirbuf, 0, true, "GAME");
+	char newdirbuf[PLATFORM_MAX_PATH];
+	BuildPath(Path_SM, newdirbuf, sizeof(newdirbuf), "%s/%s/%s", STA_RootPath, STA_ZoneFolder, mapbuf);
+				
+	if (!DirExists(newdirbuf))
+		CreateDirectory(newdirbuf, 511);
 	
 	int steamid = GetSteamAccountID(client);
 	
@@ -624,10 +621,10 @@ public void CP_SaveZonesToFile(int client)
 	char namebuf[256];
 	FormatEx(namebuf, sizeof(namebuf), "[%d] %s (%s)", steamid, playernamebuf, timebuf);
 	
-	char filename[512];
-	FormatEx(filename, sizeof(filename), "%s\\%s.STA", newdirbuf, namebuf);
+	char filename[PLATFORM_MAX_PATH];
+	FormatEx(filename, sizeof(filename), "%s/%s.STA", newdirbuf, namebuf);
 	
-	File file = OpenFile(filename, "wb", true);
+	File file = OpenFile(filename, "wb");
 	
 	if (file == null)
 	{
@@ -750,7 +747,15 @@ public void CP_StartTouch(int entity, int client)
 			
 			if (zonetype == CP_ZoneTypeNormal)
 			{
-				FormatEx(message, sizeof(message), STA_CheckpointFormat, zoneid, curtimebuf);
+				if (IsSource2009())
+				{
+					FormatEx(message, sizeof(message), STA_CheckpointFormat, zoneid, curtimebuf);
+				}
+
+				else
+				{
+					FormatEx(message, sizeof(message), STA_CSGOCheckpointFormat, zoneid, curtimebuf);
+				}
 				
 				if (isfake)
 				{
@@ -768,7 +773,15 @@ public void CP_StartTouch(int entity, int client)
 				char namebuf[MAX_NAME_LENGTH];				
 				GetClientName(fakeid, namebuf, sizeof(namebuf));
 				
-				FormatEx(message, sizeof(message), STA_EndFinishFormat, namebuf, curtimebuf);
+				if (IsSource2009())
+				{
+					FormatEx(message, sizeof(message), STA_EndFinishFormat, namebuf, curtimebuf);
+				}
+
+				else
+				{
+					FormatEx(message, sizeof(message), STA_CSGOEndFinishFormat, namebuf, curtimebuf);
+				}
 				
 				STA_PrintMessageToAllClients(message);
 				
@@ -792,13 +805,13 @@ public void CP_EndTouch(int entity, int client)
 		return;
 	}
 	
-	bool isfake = false;
-	int fakeid = 0;
+	/*bool isfake = false;
+	int fakeid = 0;*/
 	
 	if (IsFakeClient(client))
 	{
-		isfake = true;
-		fakeid = client;
+		/*isfake = true;
+		fakeid = client;*/
 		
 		client = Bot_GetLinkedPlayerIndex(client);
 	}
@@ -890,8 +903,7 @@ public void CP_CreateTriggerForCheckpoint(int checkpoint)
 	DispatchKeyValue(newent, "StartDisabled", "0");
 	DispatchKeyValue(newent, "targetname", zonename);
 	DispatchKeyValue(newent, "wait", "0");
-	
-	SetEntityModel(newent, CP_Model);
+	DispatchKeyValue(newent, "model", CP_Model);
 	
 	int zonetype = cpinfo[CPZone_ZoneType];
 	
