@@ -1,6 +1,6 @@
 ## Source Tool Assist
 
-Plugin for tool assisted runs in CSS. Supports stitching a run together with rewind or tick by tick advancement. With replays on a bot and allows editing of that bot in spectator. Includes zones and tick timer.
+Plugin helper for tool assists. Supports stitching a run together with rewind or tick by tick advancement. With replays on a bot and allows editing of that bot in spectator. Includes zones and tick timer.
 
 ### Commands
 
