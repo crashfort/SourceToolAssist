@@ -4,8 +4,8 @@ Plugin for tool assisted runs in CSS. Supports stitching a run together with rew
 
 ### Commands
 
-- **sm_segmentreplay** - Open main plugin menu. 
-- **sm_zone_edit** - Open zone edit menu.
+- **sm_sta** - Open main plugin menu. 
+- **sm_zones** - Open zone edit menu.
 - **sm_stepback** - Step back a single tick in edit mode.
 - **sm_stepforward** - Step forward a single tick in edit mode.
 - **+sm_rewind** - Start rewinding with speed factor in edit mode.

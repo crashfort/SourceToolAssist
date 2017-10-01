@@ -385,7 +385,7 @@ public void CP_OnMapEnd()
 
 public void CP_Init()
 {	
-	RegConsoleCmd("sm_zone_edit", STA_ZoneEdit);
+	RegConsoleCmd("sm_zones", STA_ZoneEdit);
 	RegConsoleCmd("sm_zone_gridsize", STA_ZoneGridSize);
 }
 

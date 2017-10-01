@@ -915,7 +915,7 @@ public void OnPluginStart()
 	if (!DirExists(dirbuf))
 		CreateDirectory(dirbuf, 511);
 
-	RegConsoleCmd("sm_segmentreplay", STA_ManageReplays);
+	RegConsoleCmd("sm_sta", STA_ManageReplays);
 	RegConsoleCmd("sm_respawn", STA_RespawnPlayer);
 	
 	RegConsoleCmd("sm_stepforward", STA_StepForward);
