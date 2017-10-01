@@ -7,7 +7,6 @@
 #include <keyvalues>
 #include <sdkhooks>
 #include <sdktools>
-#include <multicolors>
 
 /*
 	https://forums.alliedmods.net/showthread.php?t=247770
