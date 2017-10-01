@@ -948,7 +948,7 @@ public Action GetBotIDs(Handle timer)
 			CS_SetClientClanTag(i, "[STA]");
 			
 			char namebuf[MAX_NAME_LENGTH];			
-			FormatEx(namebuf, sizeof(namebuf), "Cutie");
+			FormatEx(namebuf, sizeof(namebuf), "github.com/crashfort/SourceToolAssist");
 			
 			SetClientName(i, namebuf);
 			
