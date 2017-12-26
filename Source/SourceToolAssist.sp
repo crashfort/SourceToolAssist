@@ -585,7 +585,7 @@ public void STA_OpenSegmentReplayMenu(int client)
 	bool onteam = IsPlayingOnTeam(client);
 
 	Menu menu = CreateMenu(MenuHandler_SegmentReplay);
-	SetMenuTitle(menu, "Segment Replay Menu");
+	SetMenuTitle(menu, "STA Menu");
 	
 	//Player_PrintInfo(client);
 	
