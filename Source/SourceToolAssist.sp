@@ -31,7 +31,7 @@ public Plugin myinfo =
 	name = "Source Tool Assist",
 	author = "crashfort",
 	description = "",
-	version = "3",
+	version = "4",
 	url = "https://google.se"
 };
 
