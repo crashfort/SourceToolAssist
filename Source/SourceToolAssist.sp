@@ -897,6 +897,11 @@ public Action OnTrigger(int entity, int other)
 	return Plugin_Continue;
 }
 
+/*
+	Force the bot back on course if it's off by this much squared, just for teleports and things
+*/
+ConVar VariableTeleportDistance;
+
 public void OnPluginStart()
 {
 	char dirbuf[PLATFORM_MAX_PATH];
@@ -931,6 +936,8 @@ public void OnPluginStart()
 	
 	Offsets_Init();
 	CP_Init();
+	
+	VariableTeleportDistance = CreateConVar("sm_sta_teledist", "9216", "3D vector length that decides what a teleport is");
 }
 
 public Action GetBotIDs(Handle timer)
@@ -1215,14 +1222,9 @@ public Action OnPlayerRunCmd(int client, int& buttons, int& impulse, float wishv
 					float curpos[3];
 					GetClientAbsOrigin(fakeid, curpos);
 					
-					/*
-						Force the bot back on course if it's off by this much squared, just for teleports and things
-					*/
-					#define BotCorrectDistance 96.0 * 96.0
-					
 					float distance = GetVectorDistance(pos, curpos, true);
 					
-					if (distance > BotCorrectDistance)
+					if (distance > VariableTeleportDistance.FloatValue)
 					{
 						//PrintToChat(client, "%0.2f, %0.2f", distance, BotCorrectDistance);
 						
